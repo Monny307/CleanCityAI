@@ -1,0 +1,15 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+node_modules/
+dist/
+.pytest_cache/
+.ruff_cache/
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
