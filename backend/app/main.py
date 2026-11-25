@@ -40,3 +40,10 @@ app.mount("/api/uploads", StaticFiles(directory=UPLOAD_DIR), name="report-upload
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "cleancity-api", "version": app.version}
 
+@app.get("/")
+def root():
+    return {
+        "message": "Welcome to CleanCityAI API",
+        "status": "running"
+    }
+

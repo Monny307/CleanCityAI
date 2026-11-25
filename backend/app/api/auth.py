@@ -6,9 +6,32 @@ from app.database import get_db
 from app.models import User
 from app.schemas import LoginRequest, RegisterRequest, TokenResponse, UserResponse
 from app.security import create_access_token, get_current_user, hash_password, verify_password
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
+@router.post("/token")
+def oauth2_login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+) -> dict[str, str]:
+
+    user = db.scalar(
+        select(User).where(User.email == form_data.username.lower())
+    )
+
+    if user is None or not verify_password(
+        form_data.password, user.password_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password"
+        )
+
+    return {
+        "access_token": create_access_token(user),
+        "token_type": "bearer"
+    }
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> TokenResponse:
